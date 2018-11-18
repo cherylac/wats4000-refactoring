@@ -9,37 +9,22 @@
     <ul v-if="weatherData && errors.length===0" class="forecast">
       <li v-for="forecast in weatherData.list">
         <h3>{{ forecast.dt|formatDate }}</h3>
-        <!-- TODO: Make weather summary be in a child component. -->
-        <div v-for="weatherSummary in forecast.weather" class="weatherSummary">
-            <img v-bind:src="'http://openweathermap.org/img/w/' + weatherSummary.icon + '.png'" v-bind:alt="weatherSummary.main">
-            <br>
-            <b>{{ weatherSummary.main }}</b>
-        </div>
-        <!-- TODO: Make dl of weather data be in a child component. -->
-        <dl>
-            <dt>Humidity</dt>
-            <dd>{{ forecast.main.humidity }}%</dd>
-            <dt>High</dt>
-            <dd>{{ forecast.main.temp_max }}&deg;F</dd>
-            <dt>Low</dt>
-            <dd>{{ forecast.main.temp_min }}&deg;F</dd>
-        </dl>
+       <weather-summary v-bind:weatherData="forecast.weather"></weather-summary>
+       <weather-conditions v-bind:conditions="forecast.main"></weather-conditions> 
       </li>
     </ul>
-    <div v-else-if="errors.length > 0">
-      <h2>There was an error fetching weather data.</h2>
-      <ul class="errors">
-        <li v-for="error in errors">{{ error }}</li>
-      </ul>
-    </div>
     <div v-else>
       <h2>Loading...</h2>
     </div>
+    <error-list v-bind:errorList="errors"></error-list>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import {API} from '@/common/api';
+import WeatherSummary from '@/components/WeatherSummary';
+import WeatherConditions from '@/components/WeatherConditions';
+import ErrorList from '@/components/ErrorList';
 
 export default {
   name: 'Forecast',
@@ -51,12 +36,9 @@ export default {
     }
   },
   created () {
-    // TODO: Improve base config for API
-    axios.get('//api.openweathermap.org/data/2.5/forecast', {
+    API.get('forecast', {
       params: {
-          id: this.$route.params.cityId,
-          units: 'imperial',
-          APPID: 'YOUR_APPID_HERE'
+          id: this.$route.params.cityId
       }
     })
     .then(response => {
@@ -71,7 +53,6 @@ export default {
       let date = new Date(timestamp * 1000);
       const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      //let weekday = date.getDay();
       let daynum = date.getDate();
       let month = date.getMonth();
 
@@ -85,20 +66,18 @@ export default {
       } else if (hour < 12) {
         hour = hour + 'AM';
       }
-      //let year = date.getFullYear();
       return `${ months[month] } ${ daynum } @ ${ hour }`;
     }
+  },
+  components: {
+    'weather-summary': WeatherSummary,
+    'weather-conditions': WeatherConditions,
+    'error-list': ErrorList
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.errors li {
-  color: red;
-  border: solid red 1px;
-  padding: 5px;
-}
 h1, h2 {
   font-weight: normal;
 }
@@ -119,29 +98,7 @@ li {
 a {
   color: #42b983;
 }
-.weatherSummary {
-  display: inline-block;
-  width: 100px;
-}
-dl {
-  padding: 5px;
-  background: #e8e8e8;
-}
-dt {
-  float: left;
-  clear: left;
-  width: 120px;
-  text-align: right;
-  font-weight: bold;
-  color: blue;
-}
-dd {
-  margin: 0 0 0 130px;
-  padding: 0 0 0.5em 0;
-}
-dt::after {
-  content: ":";
-}
+
 </style>
 
 

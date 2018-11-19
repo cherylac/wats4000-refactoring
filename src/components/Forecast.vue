@@ -7,7 +7,7 @@
     </p>
 
     <ul v-if="weatherData && errors.length===0" class="forecast">
-      <li v-for="forecast in weatherData.list">
+      <li v-for="(forecast, index) in weatherData.list" v-bind:key="index">
         <h3>{{ forecast.dt|formatDate }}</h3>
        <weather-summary v-bind:weatherData="forecast.weather"></weather-summary>
        <weather-conditions v-bind:conditions="forecast.main"></weather-conditions> 

@@ -5,7 +5,7 @@
         <p>Enter city name: <input type="text" v-model="query" placeholder="Paris, TX"> <button type="submit">Go</button></p>
     </form>
     <ul class="cities" v-if="results && results.list.length > 0">
-        <li v-for="city in results.list">
+        <li v-for="(city, index) in results.list" v-bind:key="index">
             <h2>{{ city.name }}, {{ city.sys.country }}</h2>
             <p><router-link v-bind:to="{ name: 'CurrentWeather', params: { cityId: city.id } }">View Current Weather</router-link></p>
 

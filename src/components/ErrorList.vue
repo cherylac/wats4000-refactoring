@@ -3,7 +3,7 @@
         <div v-if="errorList.length > 0">
             <h2>There was an error fetching data.</h2>
             <ul class="errors">
-                <li v-for="error in errorList">{{ error }}</li>
+                <li v-for="(error, index) in errorList" v-bind:key="index">{{ error }}</li>
             </ul>
         </div>
     </div>
@@ -18,7 +18,7 @@ export default {
         }
     },
     props: {
-        errorList: []
+        errorList: Array
     }
 }
 </script>
